@@ -1,13 +1,13 @@
 package com.gabriel2718.api_rest.controllers;
 
+import com.gabriel2718.api_rest.dtos.ProductDto;
 import com.gabriel2718.api_rest.model.Product;
 import com.gabriel2718.api_rest.repositories.ProductRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,4 +27,20 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(listProducts);
     }
     //Método executado quando a aplicação recebe uma requisição do tipo Get no endpoint '/products'
+
+    @GetMapping("/{id}")
+    public ResponseEntity getById(@PathVariable(value = "id") Integer id) { //O parâmetro id é um caminho variável que se refere ao id do corpo da requisição
+        Optional product = repository.findById(id);
+        if(product.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
+        }
+        return ResponseEntity.status(HttpStatus.FOUND).body(product.get());
+    }
+
+    @PostMapping
+    public ResponseEntity save(@RequestBody ProductDto dto) {
+        Product p = new Product();
+        BeanUtils.copyProperties(dto, p);
+        return ResponseEntity.status(HttpStatus.OK).body(repository.save(p));
+    }
 }
