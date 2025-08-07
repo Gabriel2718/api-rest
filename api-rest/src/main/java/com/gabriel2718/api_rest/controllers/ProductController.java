@@ -43,4 +43,25 @@ public class ProductController {
         BeanUtils.copyProperties(dto, p);
         return ResponseEntity.status(HttpStatus.OK).body(repository.save(p));
     }
+
+    @DeleteMapping({"/{id}"})
+    public ResponseEntity deleteById(@PathVariable(value = "id") Integer id) {
+        Optional<Product> product = repository.findById(id);
+        if(product.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
+        }
+        repository.delete(product.get());
+        return ResponseEntity.status(HttpStatus.OK).body("Product deleted");
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity updateById(@PathVariable(value = "id") Integer id, @RequestBody ProductDto dto) {
+        Optional<Product> product = repository.findById(id);
+        if(product.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
+        }
+        Product productModel = product.get();
+        BeanUtils.copyProperties(dto, productModel);
+        return ResponseEntity.status(HttpStatus.OK).body(repository.save(productModel));
+    }
 }
